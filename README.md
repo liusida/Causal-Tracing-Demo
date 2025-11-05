@@ -41,6 +41,8 @@ I see Causal Tracing as analogous to [angiography](https://en.wikipedia.org/wiki
 
 The early site reflects the aggregation of information about the subject toward the last token of the phrase. (e.g. "Michael Jordan" -> "Jordan", or "The Space Needle" -> "le", right before the early site.)
 
+I'm still trying to understand the MLP-recall aspect of the early site.
+
 ## Differences from the Original Paper
 
 This implementation differs from the original paper in several ways:
@@ -48,3 +50,5 @@ This implementation differs from the original paper in several ways:
 1. **Corruption Method**: Instead of adding Gaussian noise of 3 times its std deviation, we simply replace all subject activations with noise.
 
 2. **Indirect Effect(IE)**: Instead of using IE ($P_{final} - P_{corrupted}$), we simply use $P_{final}$.
+
+3. **MLP recall**: I haven't implemented the "severed MLP" experiment.
