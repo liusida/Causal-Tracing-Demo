@@ -37,4 +37,14 @@ The process involves:
 
 Since the subject is replaced with noise in the corrupted version, the activations that restore the correct output probability can be thought of as carrying information about the subject — not necessarily the entire factual association (i.e., the relationship between the subject and the object).
 
-I see Causal Tracing as similar to [angiography](https://en.wikipedia.org/wiki/Angiography) in medicine: it reveals how the “information flow” of the subject moves through the model’s activations during a normal run.
+I see Causal Tracing as analogous to [angiography](https://en.wikipedia.org/wiki/Angiography) in medicine: it reveals how the “information flow” of the subject moves through the model’s activations during a normal run.
+
+The early site reflects the aggregation of information about the subject toward the last token of the phrase. (e.g. "Michael Jordan" -> "Jordan", or "The Space Needle" -> "le", right before the early site.)
+
+## Differences from the Original Paper
+
+This implementation differs from the original paper in several ways:
+
+1. **Corruption Method**: Instead of adding Gaussian noise of 3 times its std deviation, we simply replace all subject activations with noise.
+
+2. **Indirect Effect(IE)**: Instead of using IE ($P_{final} - P_{corrupted}$), we simply use $P_{final}$.
