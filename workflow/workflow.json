@@ -1,0 +1,736 @@
+{
+  "id": "19bc124c-3488-43a1-9709-62ee6d6c6dd5",
+  "revision": 0,
+  "last_node_id": 22,
+  "last_link_id": 28,
+  "nodes": [
+    {
+      "id": 18,
+      "type": "PreviewAny",
+      "pos": [
+        702.9272017873993,
+        3007.551288098598
+      ],
+      "size": [
+        852.706956956074,
+        457.38164920726376
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 23
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "PreviewAny",
+      "pos": [
+        3452.514610004778,
+        3476.1610690947473
+      ],
+      "size": [
+        716.2093615347344,
+        503.478398130042
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 27
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "PreviewAny",
+      "pos": [
+        2474.25333498183,
+        3135.4752574244026
+      ],
+      "size": [
+        659.6324970448968,
+        284.56808941022246
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 26
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "NotebookCell",
+      "pos": [
+        4291.2894224538295,
+        2398.649896468345
+      ],
+      "size": [
+        697.0534197151419,
+        707.5864819265248
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 7
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "Main Loop, Restoring hidden states for each layer & token, Record the probabilities as a matrix",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "clean_h, corrupt_h = input\n\ndef test():\n    for i,_ in enumerate(clean_h):\n        logits = forward_from(clean_h[i], i)\n        show_top_predictions(logits)\n    for i,_ in enumerate(clean_h):\n        logits = forward_from(corrupt_h[i], i)\n        show_top_predictions(logits)\n\n# Patch them\ntarget_id = tok(target, add_special_tokens=False).input_ids[0]\nresults = []\nfor i in range(len(clean_h)):\n    result = []\n    for j in range(clean_h[0].shape[1]):\n        print(f\"{i}, {j}\")\n        h = corrupt_h[i].clone()\n        h[:,j,:] = clean_h[i][:,j,:]\n        logits = forward_from(h, j)\n        prob = logits.softmax(-1)[target_id].item()\n        result.append(prob)\n    results.append(result)\n\nresults = np.array(results)\nResult = results"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "pos": [
+        5114.580533351391,
+        2449.7290157901607
+      ],
+      "size": [
+        489.5965618624323,
+        531.3531416025771
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 28
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        5670.231464283394,
+        3318.763402550351
+      ],
+      "size": [
+        578.5799683602445,
+        441.45702394582395
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "NotebookCell",
+      "pos": [
+        2420.1328479841027,
+        1649.134248836267
+      ],
+      "size": [
+        847.9577058572904,
+        700.2743581307159
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 22
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Helper Function: forward_from",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def forward_from(h, layer_idx):\n    # h = hs[layer_idx]\n    cache_position = torch.arange(0,h.shape[1], device=model.device)\n    position_ids = cache_position.unsqueeze(0)\n    if model.__class__.__name__ == \"GPT2LMHeadModel\":\n        position_embeddings = model.transformer.wpe(position_ids)\n        total_layer = len(model.transformer.h)\n    elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n        position_embeddings = model.model.rotary_emb(h, position_ids)\n        total_layer = len(model.model.layers)\n    else:\n        assert \"Model Unknown.\"\n    for i in range(layer_idx, total_layer):\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.h[i](h, attention_mask=None, position_ids=position_ids, past_key_values=None, use_cache=False, cache_position=cache_position, position_embeddings=position_embeddings)[0]\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.layers[i](h, attention_mask=None, position_ids=position_ids, past_key_values=None, use_cache=False, cache_position=cache_position, position_embeddings=position_embeddings)\n        else:\n            assert \"Model Unknown.\"\n    if layer_idx < total_layer:\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.ln_f(h)\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.norm(h)\n        else:\n            assert \"Model Unknown.\"\n    h = h[:,-1,:]\n    h = model.lm_head(h)\n    logits = h.view(-1)\n    return logits\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 11,
+      "type": "NotebookCell",
+      "pos": [
+        2396.6466458750174,
+        1201.2254397268337
+      ],
+      "size": [
+        889.4332166608801,
+        374.73425766882656
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Helper Function: show_top_predictions",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def show_top_predictions(logits, n=5):\n    print(\"show_top_predictions>\")\n    probs = logits.softmax(-1)\n    topk = torch.topk(probs, n)\n    for r, (idx, p) in enumerate(zip(topk.indices.tolist(), topk.values.tolist()), 1):\n        tok_str = tok.decode([idx], skip_special_tokens=False).strip()\n        print(f\"{r:>2}. {tok_str:<15} ({p:.3f})\")\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 4,
+      "type": "NotebookCell",
+      "pos": [
+        3429.5844995433968,
+        2508.7126447179808
+      ],
+      "size": [
+        737.3692828683356,
+        903.6816302669658
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 4
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Prepare Clean run and Corrupted run",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "torch.manual_seed(42)\nenc = input\n\nenc = {k: v.to(model.device) for k, v in enc.items()}\nprompt_ids = enc[\"input_ids\"][0].tolist()\n\n# --- Subject span detection (dynamic) ---\nsubject_ids = tok(subject)[\"input_ids\"]\ndef find_subsequence(sub, seq):\n    for i in range(len(seq) - len(sub) + 1):\n        if seq[i:i+len(sub)] == sub:\n            return list(range(i, i+len(sub)))\n    return None\n\nsubject_pos = find_subsequence(subject_ids, prompt_ids)\nif subject_pos is None:\n    raise ValueError(\"Subject tokens not found in prompt after stripping. Check texts/tokenizer.\")\nprint(f\"Subject token indices: {subject_pos}\")\n\n# --- Target id ---\ntarget_id = tok(target, add_special_tokens=False).input_ids[0]\n\n# --- Clean run ---\nwith torch.no_grad():\n    clean = model(**enc)\n    clean_h = [h.detach() for h in clean.hidden_states]\n    clean_logits = clean.logits[0, -1]\n    clean_p = clean_logits.softmax(-1)[target_id].item()\n\n# --- Corrupt embeddings on subject tokens only ---\nemb = model.get_input_embeddings()(enc[\"input_ids\"])\nnoise = torch.randn_like(emb) * 0.1\nemb_corrupt = emb.clone()\nemb_corrupt[0, subject_pos] += noise[0, subject_pos]\n\nwith torch.no_grad():\n    corrupt = model(inputs_embeds=emb_corrupt, output_hidden_states=True)\n    corrupt_h = [h.detach() for h in corrupt.hidden_states]\n    corrupt_logits = corrupt.logits[0, -1]\n    corrupt_p = corrupt_logits.softmax(-1)[target_id].item()\n\n# --- Helpers: show next-token predictions ---\nprint(f\"{clean_logits.shape=}\")\nprint(\"\\n🧠 Clean run top-5 predictions:\")\nshow_top_predictions(clean_logits)\nprint(\"\\n💥 Corrupted run top-5 predictions:\")\nshow_top_predictions(corrupt_logits)\nprint(f\"\\nClean prob(target='{target.strip()}'):    {clean_p:.4f}\")\nprint(f\"Corrupted prob(target='{target.strip()}'): {corrupt_p:.4f}\")\n\n\nResult = clean_h, corrupt_h"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 3,
+      "type": "NotebookCell",
+      "pos": [
+        2465.3484544502758,
+        2530.14739842532
+      ],
+      "size": [
+        688.0422934575549,
+        535.1643047249199
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 25
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            4,
+            18
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "Format and Encode the prompt",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "# --- Build chat input (closed by default with <|im_end|>) ---\nmessages = [\n    {\"role\": \"user\", \"content\": \"State a fact.\"},\n    {\"role\": \"assistant\", \"content\": assistant_prefix},\n]\nif getattr(tok, \"chat_template\", None):\n    prompt_text = tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)\n    enc = tok(prompt_text, return_tensors=\"pt\")\n    ids = enc[\"input_ids\"]\n    enc[\"input_ids\"] = ids[:,:-2]\n    enc[\"attention_mask\"] = enc[\"attention_mask\"][:, :ids.size(1)]\nelse:\n    enc = tok(assistant_prefix, return_tensors=\"pt\")\n\n\nprint(\"Chat-formatted input:\\n\", tok.decode(enc['input_ids'].view(-1)))\n\nResult = enc"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 12,
+      "type": "NotebookCell",
+      "pos": [
+        5021.186965860028,
+        3309.4359875805458
+      ],
+      "size": [
+        579.4408735486977,
+        495.3040573059061
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 15
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": null
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "Make Plot",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "results = input.T\nenc = input_2\n\ntokens = [tok.decode([i]) for i in enc[\"input_ids\"][0].tolist()]\n\nplt.imshow(results, cmap=\"Blues\", vmin=0.0, vmax=1.0, aspect=1)\nplt.colorbar()\nplt.yticks(range(len(tokens)), tokens, fontsize=8)\nplt.ylabel(\"Tokens\")\nplt.xlabel(\"Layer\")\nplt.title(f\"Causal Tracing Heatmap {model_name}\")\nplt.tight_layout()\nplt.show()\n\nprint(results.shape)"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 1,
+      "type": "NotebookCell",
+      "pos": [
+        652.4042551446789,
+        2010.9706406545283
+      ],
+      "size": [
+        919.3086925547113,
+        923.493534547531
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            22,
+            24
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "Load Model",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "# =============================\n# 🧠 Causal Tracing for Qwen3-0.6B Chat (strip trailing <|im_end|>)\n# =============================\nimport torch, matplotlib.pyplot as plt\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\n# --- Config ---\nmodel_name = \"Qwen/Qwen3-0.6B\"\n# model_name = \"openai-community/gpt2-xl\"\ndevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n\n# --- Load ---\ntok = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name, output_hidden_states=True\n).eval().to(device)\n\nprint(model)"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 19,
+      "type": "NotebookCell",
+      "pos": [
+        1692.808146078162,
+        2397.296066934022
+      ],
+      "size": [
+        648.7090016217708,
+        351.92526996453853
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 24
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Prompt",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "assistant_prefix = \"Michael Jordan is one of the greatest players in the game of\"\nsubject = \"Michael Jordan\"\ntarget = \" basketball\"  # factual continuation we expect\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    }
+  ],
+  "links": [
+    [
+      4,
+      3,
+      0,
+      4,
+      0,
+      "*"
+    ],
+    [
+      7,
+      4,
+      0,
+      7,
+      0,
+      "*"
+    ],
+    [
+      11,
+      10,
+      0,
+      7,
+      1,
+      "*"
+    ],
+    [
+      12,
+      11,
+      0,
+      4,
+      1,
+      "*"
+    ],
+    [
+      15,
+      7,
+      0,
+      12,
+      0,
+      "*"
+    ],
+    [
+      16,
+      12,
+      1,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      3,
+      0,
+      12,
+      1,
+      "*"
+    ],
+    [
+      22,
+      1,
+      0,
+      10,
+      0,
+      "*"
+    ],
+    [
+      23,
+      1,
+      2,
+      18,
+      0,
+      "*"
+    ],
+    [
+      24,
+      1,
+      0,
+      19,
+      0,
+      "*"
+    ],
+    [
+      25,
+      19,
+      0,
+      3,
+      0,
+      "*"
+    ],
+    [
+      26,
+      3,
+      2,
+      20,
+      0,
+      "*"
+    ],
+    [
+      27,
+      4,
+      2,
+      21,
+      0,
+      "*"
+    ],
+    [
+      28,
+      7,
+      2,
+      22,
+      0,
+      "*"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5730855330116944,
+      "offset": [
+        -514.6163617656807,
+        -1001.9667017847115
+      ]
+    },
+    "frontendVersion": "1.28.7"
+  },
+  "version": 0.4
+}
