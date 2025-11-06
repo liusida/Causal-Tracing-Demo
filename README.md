@@ -41,7 +41,7 @@ I see Causal Tracing as analogous to [angiography](https://en.wikipedia.org/wiki
 
 The early site reflects the aggregation of information about the subject toward the last token of the phrase. (e.g. "Michael Jordan" -> "Jordan", or "The Space Needle" -> "le", right before the early site.)
 
-I'm still trying to understand the MLP-recall aspect of the early site.
+I'm still trying to understand the MLP-recall aspect of the early site. Specifically, I don't understand why the paper severs the MLP addition all the way through to the final layer, rather than only at the early site itself.
 
 ## Updated: Attn/MLP Severing Experiment
 
