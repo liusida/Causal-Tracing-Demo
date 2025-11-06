@@ -1,0 +1,904 @@
+{
+  "id": "0fdb5929-3680-454f-a46c-623c3e7e2889",
+  "revision": 0,
+  "last_node_id": 17,
+  "last_link_id": 18,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "NotebookCell",
+      "pos": [
+        786.4612391547064,
+        1821.542368099645
+      ],
+      "size": [
+        680.5538756980914,
+        598.5438234215881
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "title": "Load Model",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "# =============================\n# 🧠 Causal Tracing for Qwen3-0.6B Chat (strip trailing <|im_end|>)\n# =============================\nimport torch, matplotlib.pyplot as plt\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\n\n# --- Config ---\n# model_name = \"Qwen/Qwen3-0.6B\"\nmodel_name = \"openai-community/gpt2-xl\"\ndevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n\n# --- Load ---\ntok = AutoTokenizer.from_pretrained(model_name)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_name, output_hidden_states=True\n).eval().to(device)\n\nprint(model)"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 6,
+      "type": "NotebookCell",
+      "pos": [
+        1518.574270816727,
+        2913.5579635049908
+      ],
+      "size": [
+        610.5707484138857,
+        629.2144967669624
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 5
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Find Subject's Positions",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "enc = {k: v.to(model.device) for k, v in enc.items()}\nprompt_ids = enc[\"input_ids\"][0].tolist()\n\n# --- Subject span detection (dynamic) ---\nsubject_ids = tok(subject)[\"input_ids\"]\nprint(prompt_ids, f\"[{tok.decode(prompt_ids)}]\")\nprint(subject_ids, tok.decode(subject_ids))\ndef find_subsequence(sub, seq):\n    for i in range(len(seq) - len(sub) + 1):\n        if seq[i:i+len(sub)] == sub:\n            return list(range(i, i+len(sub)))\n    return None\n\nsubject_pos = find_subsequence(subject_ids, prompt_ids)\nif subject_pos is None:\n    raise ValueError(\"Subject tokens not found in prompt after stripping. Check texts/tokenizer.\")\nprint(f\"Subject token indices: {subject_pos}\")\n\n# --- Target id ---\ntarget_id = tok(target, add_special_tokens=False).input_ids[0]\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 7,
+      "type": "NotebookCell",
+      "pos": [
+        3223.263188457391,
+        3431.0900740558936
+      ],
+      "size": [
+        452.4399767659984,
+        304.8799535319963
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 7
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": null
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Double Check",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "print(clean_h[0].shape)\nprint(clean_attn_addition[0].shape)\nprint(clean_mlp_addition[0].shape)\n\nprint(torch.allclose(clean_h[1], clean_h[0]+clean_attn_addition[0]+clean_mlp_addition[0]))\nprint(len(corrupt_mlp_addition))\n\nprint(enc[\"input_ids\"].shape[1])\n\nprint(len(model.transformer.h))\n# print(len(model.transformer.h))"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "NotebookCell",
+      "pos": [
+        2403.11912314393,
+        2319.1294893449904
+      ],
+      "size": [
+        787.5923695204792,
+        960.250106258452
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 6
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            7,
+            11
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "torch.manual_seed(42)\nimport copy\n\nattn_additions = []\nmlp_additions = []\n\ndef make_hook(storage, label):\n    def hook_fn(m, inp, out):\n        # print(f\"[Hook fired] {label} | type={m.__class__.__name__} | shape={out[0].shape if isinstance(out, tuple) else out.shape}\")\n        storage.append(out[0].detach() if isinstance(out, tuple) else out.detach())\n    return hook_fn\n\nhook_handles = []\ndef register_hooks(model):\n    for name, module in model.named_modules():\n        if name.endswith(\".self_attn\") or name.endswith(\".attn\"):\n            handle = module.register_forward_hook(make_hook(attn_additions, name))\n            hook_handles.append(handle)\n        elif name.endswith(\".mlp\"):\n            handle = module.register_forward_hook(make_hook(mlp_additions, name))\n            hook_handles.append(handle)\n\nregister_hooks(model)\n\nprint(\"# --- Clean run ---\")\nwith torch.no_grad():\n    attn_additions.clear()\n    mlp_additions.clear()\n\n    clean = model(**enc, output_hidden_states=True)\n    clean_h = [h.detach() for h in clean.hidden_states]\n    clean_logits = clean.logits[0, -1]\n    clean_p = clean_logits.softmax(-1)[target_id].item()\n\n    clean_attn_addition = copy.deepcopy(attn_additions)\n    clean_mlp_addition = copy.deepcopy(mlp_additions)\n\n\nprint(\"# --- Corrupt embeddings on subject tokens only ---\")\nemb = model.get_input_embeddings()(enc[\"input_ids\"])\nstd_emb = torch.std(emb[0, subject_pos])\nnoise = torch.randn_like(emb[0, subject_pos]) * std_emb * 3\nemb_corrupt = emb.clone()\nemb_corrupt[0, subject_pos] = noise\n\nwith torch.no_grad():\n    attn_additions.clear()\n    mlp_additions.clear()\n\n    corrupt = model(inputs_embeds=emb_corrupt, output_hidden_states=True)\n    corrupt_h = [h.detach() for h in corrupt.hidden_states]\n    corrupt_logits = corrupt.logits[0, -1]\n    corrupt_p = corrupt_logits.softmax(-1)[target_id].item()\n\n    corrupt_attn_addition = copy.deepcopy(attn_additions)\n    corrupt_mlp_addition = copy.deepcopy(mlp_additions)\n\nfor h in hook_handles:\n    h.remove()\nhook_handles.clear()\n\n# --- Helpers: show next-token predictions ---\nprint(f\"{clean_logits.shape=}\")\nprint(\"\\n🧠 Clean run top-5 predictions:\")\nshow_top_predictions(clean_logits)\nprint(\"\\n💥 Corrupted run top-5 predictions:\")\nshow_top_predictions(corrupt_logits)\nprint(f\"\\nClean prob(target='{target.strip()}'):    {clean_p:.4f}\")\nprint(f\"Corrupted prob(target='{target.strip()}'): {corrupt_p:.4f}\")\n\n\n# Result = clean_h, corrupt_h"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 8,
+      "type": "NotebookCell",
+      "pos": [
+        1716.2340676307235,
+        1484.6753497381524
+      ],
+      "size": [
+        785.4338292300881,
+        312.7459500468965
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Helper",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def show_top_predictions(logits, n=5):\n    print(\"show_top_predictions>\")\n    probs = logits.softmax(-1)\n    topk = torch.topk(probs, n)\n    for r, (idx, p) in enumerate(zip(topk.indices.tolist(), topk.values.tolist()), 1):\n        tok_str = tok.decode([idx], skip_special_tokens=False).strip()\n        print(f\"{r:>2}. {tok_str:<15} ({p:.3f})\")\n"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "NotebookCell",
+      "pos": [
+        3029.734874033075,
+        1390.611729888285
+      ],
+      "size": [
+        842.2312238225577,
+        811.7392071473334
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def forward_from(h, layer_idx):\n    cache_position = torch.arange(0,h.shape[1], device=model.device)\n    position_ids = cache_position.unsqueeze(0)\n    if model.__class__.__name__ == \"GPT2LMHeadModel\":\n        position_embeddings = model.transformer.wpe(position_ids)\n        total_layer = len(model.transformer.h)\n    elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n        position_embeddings = model.model.rotary_emb(h, position_ids)\n        total_layer = len(model.model.layers)\n    else:\n        assert \"Model Unknown.\"\n\n    for i in range(layer_idx, total_layer):\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.h[i](h, attention_mask=None, position_ids=position_ids, past_key_values=None, use_cache=False, cache_position=cache_position, position_embeddings=position_embeddings)[0]\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.layers[i](h, attention_mask=None, position_ids=position_ids, past_key_values=None, use_cache=False, cache_position=cache_position, position_embeddings=position_embeddings)\n        else:\n            assert \"Model Unknown.\"\n\n    if layer_idx < total_layer:\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.ln_f(h)\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.norm(h)\n        else:\n            assert \"Model Unknown.\"\n            \n    h = h[:,-1,:]\n    h = model.lm_head(h)\n    logits = h.view(-1)\n    return logits\n"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        4309.743753538591,
+        2449.7392413046487
+      ],
+      "size": [
+        481.53341194645327,
+        467.04316945220444
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 14
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "NotebookCell",
+      "pos": [
+        3975.7882991637866,
+        1392.6483431334761
+      ],
+      "size": [
+        779.692008608471,
+        807.2657068547383
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 12
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def forward_mlp_severed(h, layer_idx, token_index, corrupt_mlp_addition, only_once=False):\n    cache_position = torch.arange(0,h.shape[1], device=model.device)\n    position_ids = cache_position.unsqueeze(0)\n    if model.__class__.__name__ == \"GPT2LMHeadModel\":\n        position_embeddings = model.transformer.wpe(position_ids)\n        total_layer = len(model.transformer.h)\n    elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n        position_embeddings = model.model.rotary_emb(h, position_ids)\n        total_layer = len(model.model.layers)\n    else:\n        assert \"Model Unknown.\"\n\n    severed = False\n    for i in range(layer_idx, total_layer):\n        severed_mlp_addition = corrupt_mlp_addition[i][:,token_index,:]\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            layer = model.transformer.h[i]\n            hidden_states = h\n            residual = hidden_states\n            hidden_states = layer.ln_1(hidden_states)\n            attn_output, self_attn_weights = layer.attn(\n                hidden_states,\n                past_key_values=None,\n                cache_position=cache_position,\n                attention_mask=None,\n                head_mask=None,\n                use_cache=False,\n                output_attentions=False,\n            )\n            # residual connection\n            hidden_states = attn_output + residual\n\n            residual = hidden_states\n            hidden_states = layer.ln_2(hidden_states)\n            feed_forward_hidden_states = layer.mlp(hidden_states)\n            # residual connection\n            if not only_once or not severed:\n                feed_forward_hidden_states[:, token_index, :] = severed_mlp_addition\n                severed = True\n            hidden_states = residual + feed_forward_hidden_states\n\n            h = hidden_states\n\n\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            layer = model.model.layers[i]\n            hidden_states = h\n            residual = hidden_states\n            hidden_states = layer.input_layernorm(hidden_states)\n            # Self Attention\n            hidden_states, _ = layer.self_attn(\n                hidden_states=hidden_states,\n                attention_mask=None,\n                position_ids=position_ids,\n                past_key_values=None,\n                use_cache=False,\n                cache_position=cache_position,\n                position_embeddings=position_embeddings,\n            )\n            hidden_states = residual + hidden_states\n\n            # Fully Connected\n            residual = hidden_states\n            hidden_states = layer.post_attention_layernorm(hidden_states)\n            hidden_states = layer.mlp(hidden_states)\n            # sever:\n            if not only_once or not severed:\n                hidden_states[:, token_index, :] = severed_mlp_addition\n                severed = True\n            hidden_states = residual + hidden_states\n\n            h = hidden_states\n        else:\n            assert \"Model Unknown.\"\n\n\n    if layer_idx < total_layer:\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.ln_f(h)\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.norm(h)\n        else:\n            assert \"Model Unknown.\"\n            \n    h = h[:,-1,:]\n    h = model.lm_head(h)\n    logits = h.view(-1)\n    return logits"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 16,
+      "type": "NotebookCell",
+      "pos": [
+        4822.529700120459,
+        1387.4946471026358
+      ],
+      "size": [
+        779.692008608471,
+        807.2657068547383
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 16
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "def forward_attn_severed(h, layer_idx, token_index, corrupt_attn_addition, only_once=False):\n    cache_position = torch.arange(0,h.shape[1], device=model.device)\n    position_ids = cache_position.unsqueeze(0)\n    if model.__class__.__name__ == \"GPT2LMHeadModel\":\n        position_embeddings = model.transformer.wpe(position_ids)\n        total_layer = len(model.transformer.h)\n    elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n        position_embeddings = model.model.rotary_emb(h, position_ids)\n        total_layer = len(model.model.layers)\n    else:\n        assert \"Model Unknown.\"\n\n    severed = False\n    for i in range(layer_idx, total_layer):\n        severed_attn_addition = corrupt_attn_addition[i][:,token_index,:]\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            layer = model.transformer.h[i]\n            severed_mlp_addition = corrupt_mlp_addition[i][:,token_index,:]\n            hidden_states = h\n            residual = hidden_states\n            hidden_states = layer.ln_1(hidden_states)\n            attn_output, self_attn_weights = layer.attn(\n                hidden_states,\n                past_key_values=None,\n                cache_position=cache_position,\n                attention_mask=None,\n                head_mask=None,\n                use_cache=False,\n                output_attentions=False,\n            )\n            # residual connection\n            # sever:\n            if not only_once or not severed:\n                attn_output[:, token_index, :] = severed_attn_addition\n                severed = True            \n            hidden_states = attn_output + residual\n\n            residual = hidden_states\n            hidden_states = layer.ln_2(hidden_states)\n            feed_forward_hidden_states = layer.mlp(hidden_states)\n            # residual connection\n            if not only_once or not severed:\n                feed_forward_hidden_states[:, token_index, :] = severed_mlp_addition\n                severed = True\n            hidden_states = residual + feed_forward_hidden_states\n\n            h = hidden_states\n\n\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            layer = model.model.layers[i]\n            hidden_states = h\n            residual = hidden_states\n            hidden_states = layer.input_layernorm(hidden_states)\n            # Self Attention\n            hidden_states, _ = layer.self_attn(\n                hidden_states=hidden_states,\n                attention_mask=None,\n                position_ids=position_ids,\n                past_key_values=None,\n                use_cache=False,\n                cache_position=cache_position,\n                position_embeddings=position_embeddings,\n            )\n            # sever:\n            if not only_once or not severed:\n                hidden_states[:, token_index, :] = severed_attn_addition\n                severed = True\n            hidden_states = residual + hidden_states\n\n            # Fully Connected\n            residual = hidden_states\n            hidden_states = layer.post_attention_layernorm(hidden_states)\n            hidden_states = layer.mlp(hidden_states)\n            hidden_states = residual + hidden_states\n\n            h = hidden_states\n        else:\n            assert \"Model Unknown.\"\n\n\n    if layer_idx < total_layer:\n        if model.__class__.__name__ == \"GPT2LMHeadModel\":\n            h = model.transformer.ln_f(h)\n        elif model.__class__.__name__ == \"Qwen3ForCausalLM\":\n            h = model.model.norm(h)\n        else:\n            assert \"Model Unknown.\"\n            \n    h = h[:,-1,:]\n    h = model.lm_head(h)\n    logits = h.view(-1)\n    return logits"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 11,
+      "type": "NotebookCell",
+      "pos": [
+        3361.5401458500614,
+        2317.1807678688488
+      ],
+      "size": [
+        827.0603935787403,
+        996.0081386641709
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 11
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": null
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "Main Loop, Recover and Measure",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "l1 = forward_from(clean_h[0], 0)\n\nl2 = forward_mlp_severed(clean_h[0], 0, subject_pos[-1], corrupt_mlp_addition)\nl3 = forward_mlp_severed(clean_h[0], 0, subject_pos[-1], clean_mlp_addition)\n\nprint(torch.allclose(l1, l2))\nprint(torch.allclose(l1, l3))\n\nprint(corrupt_mlp_addition[0].shape)\n\nprint(subject_pos[-1])\n\n# key_position = subject_pos[0]\nkey_position = clean_h[0].shape[1]-1\nprint(key_position)\n\ndef prob_to_score(prob):\n    # return (prob-corrupt_p) / (clean_p-corrupt_p)\n    # Indirect Effect\n    return (prob-corrupt_p)\n\nscores_mlp_severed = []\nfor i in range(len(corrupt_h)):\n    h = corrupt_h[i].clone()\n    h[:,key_position,:] = clean_h[i][:,key_position,:]\n\n    logits = forward_mlp_severed(h, i, key_position, corrupt_mlp_addition, only_once=False)\n    prob = logits.softmax(-1)[target_id].item()\n    score = prob_to_score(prob)\n    scores_mlp_severed.append(score)\n\nscores_attn_severed = []\nfor i in range(len(corrupt_h)):\n    h = corrupt_h[i].clone()\n    h[:,key_position,:] = clean_h[i][:,key_position,:]\n\n    logits = forward_attn_severed(h, i, key_position, corrupt_attn_addition, only_once=False)\n    prob = logits.softmax(-1)[target_id].item()\n    score = prob_to_score(prob)\n    scores_attn_severed.append(score)\n\nscores_recovered = []\nfor i in range(len(corrupt_h)):\n    h = corrupt_h[i].clone()\n    h[:,key_position,:] = clean_h[i][:,key_position,:]\n\n    logits = forward_from(h, i)\n    prob = logits.softmax(-1)[target_id].item()\n    score = prob_to_score(prob)\n    scores_recovered.append(score)\n\npurple = '#6B5B95'\nred = '#D32F2F'\ngreen = '#388E3C'\n\nx = np.arange(len(scores_mlp_severed))\nwidth = 0.25  # bar width\n# Plot\nplt.figure(figsize=(10, 6))\nplt.bar(x-width, scores_recovered, width, color=purple, label='Effect of single state on P')\nplt.bar(x, scores_attn_severed, width, color=red, label='Effect with Attn severed')\nplt.bar(x+width, scores_mlp_severed, width, color=green, label='Effect with MLP severed')\n\n# Add labels and title\nplt.xlabel('Layers')\nplt.ylabel('Score (prob-corrupt_p)')\nplt.title('Comparison of MLP Severed vs Recovered Scores')\nplt.legend()\nplt.grid(axis='y', linestyle='--', alpha=0.6)\nplt.tight_layout()\n\nplt.show()"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 10,
+      "type": "PreviewAny",
+      "pos": [
+        2442.160908428593,
+        3330.4841269019366
+      ],
+      "size": [
+        712.1799254400817,
+        563.1140523308359
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        809.2830660644272,
+        2500.6269228953724
+      ],
+      "size": [
+        646.3251011861305,
+        319.3942206666443
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 1
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "PreviewAny",
+      "pos": [
+        3280.1936123325013,
+        3804.3487977128552
+      ],
+      "size": [
+        334.0279140341945,
+        204.4779430766962
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 9
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "NotebookCell",
+      "pos": [
+        1510.1607382850957,
+        2308.5164343424367
+      ],
+      "size": [
+        596.1806260222788,
+        545.96168489406
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 2
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Format and Encode",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "# --- Build chat input (closed by default with <|im_end|>) ---\nmessages = [\n    {\"role\": \"user\", \"content\": \"State a fact.\"},\n    {\"role\": \"assistant\", \"content\": main_prompt},\n]\nif getattr(tok, \"chat_template\", None):\n    prompt_text = tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)\n    enc = tok(prompt_text, return_tensors=\"pt\")\n    ids = enc[\"input_ids\"]\n    enc[\"input_ids\"] = ids[:,:-2]\n    enc[\"attention_mask\"] = enc[\"attention_mask\"][:, :ids.size(1)]\nelse:\n    enc = tok(main_prompt, return_tensors=\"pt\")\n\n\nprint(\"Chat-formatted input:\\n\", tok.decode(enc['input_ids'].view(-1)))\n\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 3,
+      "type": "NotebookCell",
+      "pos": [
+        1537.023645582756,
+        1942.2040621016642
+      ],
+      "size": [
+        541.6407839330973,
+        270.82039196654887
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "shape": 7,
+          "type": "*",
+          "link": 3
+        },
+        {
+          "name": "input_2",
+          "shape": 7,
+          "type": "*",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Result",
+          "type": "*",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "Plot",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "Stdout",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Prompt",
+      "properties": {
+        "Node name for S&R": "NotebookCell"
+      },
+      "widgets_values": [
+        "subject = \"Missouri University of Science and Technology\"\nmain_prompt = \"{} is in the state of\".format(subject)\ntarget = \" Missouri\"  # factual continuation we expect\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 15,
+      "type": "PreviewImage",
+      "pos": [
+        4331.495739626479,
+        3014.4567660480016
+      ],
+      "size": [
+        823.9898871684372,
+        518.3036662816321
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      2,
+      2,
+      0,
+      "*"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "*"
+    ],
+    [
+      3,
+      1,
+      0,
+      3,
+      0,
+      "*"
+    ],
+    [
+      5,
+      4,
+      0,
+      6,
+      0,
+      "*"
+    ],
+    [
+      6,
+      6,
+      0,
+      5,
+      0,
+      "*"
+    ],
+    [
+      7,
+      5,
+      0,
+      7,
+      0,
+      "*"
+    ],
+    [
+      8,
+      8,
+      0,
+      5,
+      1,
+      "*"
+    ],
+    [
+      9,
+      7,
+      2,
+      9,
+      0,
+      "*"
+    ],
+    [
+      10,
+      5,
+      2,
+      10,
+      0,
+      "*"
+    ],
+    [
+      11,
+      5,
+      0,
+      11,
+      0,
+      "*"
+    ],
+    [
+      12,
+      12,
+      0,
+      13,
+      0,
+      "*"
+    ],
+    [
+      14,
+      11,
+      2,
+      14,
+      0,
+      "*"
+    ],
+    [
+      15,
+      11,
+      1,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      13,
+      0,
+      16,
+      0,
+      "*"
+    ],
+    [
+      18,
+      16,
+      0,
+      11,
+      1,
+      "*"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.1916842855299141,
+      "offset": [
+        -3419.1544162094506,
+        -2772.081065223736
+      ]
+    },
+    "frontendVersion": "1.28.7"
+  },
+  "version": 0.4
+}

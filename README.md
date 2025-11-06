@@ -43,12 +43,26 @@ The early site reflects the aggregation of information about the subject toward 
 
 I'm still trying to understand the MLP-recall aspect of the early site.
 
+## Updated: Attn/MLP Severing Experiment
+
+![Exp](./workflow/Severing-Exp.png)
+
+[Download Workflow](./workflow/Severing-Exp.json)
+
 ## Differences from the Original Paper
 
 This implementation differs from the original paper in several ways:
 
-1. **Corruption Method**: Instead of adding Gaussian noise of 3 times its std deviation, we simply replace all subject activations with noise.
+1. **Corruption Method**: Instead of adding Gaussian noise of 3 times its std deviation, we added noise of std=0.1. (a mistake)
 
 2. **Indirect Effect(IE)**: Instead of using IE ($P_{final} - P_{corrupted}$), we simply use $P_{final}$.
 
-3. **MLP recall**: I haven't implemented the "severed MLP" experiment.
+## Observations on 1000 Factual Prompts
+
+I noticed that the information content of the subject's last token affects how severing attention modules impacts the model's predictions.
+
+When the subject's last token contains substantial information—for example, " Vermont" in "The University of Vermont"—the model can make accurate predictions even when attention is severed, because the last token alone carries enough information. This pattern may explain why Figure 3(c) shows that severing attention has minimal effect on average across many prompts.
+
+However, when the subject's last token contains little information—for example, " More" in "Yesterday Once More"—the model relies on attention to aggregate information from earlier tokens. In these cases, severing MLP and severing attention have similar effects: neither shows a clear advantage, and there's no pattern where attention severing rises before MLP severing.
+
+Another interesting case occurs when asking which state "Missouri University of Science and Technology" is located in. The model doesn't rely heavily on the last subject token in this case, since it can extract the answer from the first subject token ("Missouri").
