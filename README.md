@@ -75,9 +75,9 @@ The paper found that Layer 18 is important for key-value relationships:
 
 "Furthermore, the layers at which edits generalize best correspond to the middle layers of the early site identified by Causal Tracing, with generalization peaking at the 18th layer."
 
-Inspired by "Transformer Feed-Forward Layers Are Key-Value Memories" (Geva et al., 2021), I carried out a simple experiment to see how different the "keys" would be when I change the subject of a prompt.
+Inspired by "Transformer Feed-Forward Layers Are Key-Value Memories" (Geva et al., 2021), I carried out a simple experiment to see how different the "memory coefficients" would be when I change the subject of a prompt.
 
-I chose the subject "Vermont" and constructed multiple templates, creating multiple groups of negative subjects. Then I averaged the "keys" for each layer across different groups and computed the cosine similarity to the positive prompt. Here are the results:
+I chose the subject "Vermont" and constructed multiple templates, creating multiple groups of negative subjects. Then I averaged the "memory coefficients" for each layer across different groups and computed the cosine similarity to the positive prompt. Here are the results:
 
 ![Where is Vermont stored in GPT-2](./workflow/Difference-in-Keys.png)
 
