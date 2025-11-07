@@ -59,6 +59,8 @@ This implementation differs from the original paper in several ways:
 
 ## Observations on 1000 Factual Prompts
 
+The paper shares the 1000 factual prompts here: [known_1000.json](https://rome.baulab.info/data/dsets/known_1000.json)
+
 I noticed that the information content of the subject's last token affects how severing attention modules impacts the model's predictions.
 
 When the subject's last token contains substantial information—for example, " Vermont" in "The University of Vermont"—the model can make accurate predictions even when attention is severed, because the last token alone carries enough information. This pattern may explain why Figure 3(c) shows that severing attention has minimal effect on average across many prompts.
@@ -66,3 +68,19 @@ When the subject's last token contains substantial information—for example, " 
 However, when the subject's last token contains little information—for example, " More" in "Yesterday Once More"—the model relies on attention to aggregate information from earlier tokens. In these cases, severing MLP and severing attention have similar effects: neither shows a clear advantage, and there's no pattern where attention severing rises before MLP severing.
 
 Another interesting case occurs when asking which state "Missouri University of Science and Technology" is located in. The model doesn't rely heavily on the last subject token in this case, since it can extract the answer from the first subject token ("Missouri").
+
+## My Two Cents
+
+The paper found that Layer 18 is important for key-value relationships:
+
+"Furthermore, the layers at which edits generalize best correspond to the middle layers of the early site identified by Causal Tracing, with generalization peaking at the 18th layer."
+
+Inspired by "Transformer Feed-Forward Layers Are Key-Value Memories" (Geva et al., 2021), I carried out a simple experiment to see how different the "keys" would be when I change the subject of a prompt.
+
+I chose the subject "Vermont" and constructed multiple templates, creating multiple groups of negative subjects. Then I averaged the "keys" for each layer across different groups and computed the cosine similarity to the positive prompt. Here are the results:
+
+![Where is Vermont stored in GPT-2](./workflow/Difference-in-Keys.png)
+
+(Hint: you can drag this plot into ComfyUI to open the workflow and all the source code that creates it.)
+
+However, Qwen3-0.6B behaves very differently from GPT-2, indicating significant internal information dynamics between the two models, even though they are both chains of transformer blocks.
