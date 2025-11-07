@@ -83,4 +83,4 @@ I chose the subject "Vermont" and constructed multiple templates, creating multi
 
 (Hint: you can drag this plot into ComfyUI to open the workflow and all the source code that creates it.)
 
-However, Qwen3-0.6B behaves very differently from GPT-2, indicating significant internal information dynamics between the two models, even though they are both chains of transformer blocks.
+However, Qwen3-0.6B behaves very differently from GPT-2--they might not have the early sites at all, indicating significant internal information dynamics between the two models, even though they are both chains of transformer blocks.
